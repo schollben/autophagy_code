@@ -1,5 +1,38 @@
 # readme
 
+--------------
+Getting started: 
+
+- Brew installation, then: 
+    - `brew install git`
+    - `brew install miniconda`
+
+- `conda init` or `conda init zsh` if you're using macOS and zshell
+
+- `conda config --add channels conda-forge`
+
+- `conda create -n autophagy python=3.11 caiman`
+
+- `conda activate autophagy`
+
+- `pip install roifile`
+
+- `pip install tifffile`
+
+- `pip install imagecodecs`
+ 
+- Install vs code from Windows
+
+- vs code - install two extensions:
+	- Python
+	- Python Extensions
+
+- `git pull` repo for the code itself
+ 
+ 
+
+
+--------------
 Steps are as follows :
     1.) Figure out threshold value for Ch1 to kick out streak-frames (ImageJ/FIJI)
     2.) Apply threshold to Ch1 images and perform registration (Python)
