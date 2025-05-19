@@ -22,12 +22,11 @@ def initial_registration(work_dir, ch1_threshold):
     os.chdir(work_dir)
     # Setting parameters for CaImAn's motion correction
     fr = 30           
-    decay_time = 1      
-    sparse = False     
-    max_shifts = (4, 4)
+    decay_time = 1  
+    max_shifts = (20, 20)
     strides = (10, 10)
     overlaps = (10, 10)
-    max_deviation_rigid = 5
+    max_deviation_rigid = 20
 
     mc_dict = {
         'fr': fr,

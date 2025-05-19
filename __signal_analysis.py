@@ -1,7 +1,7 @@
-import code
 import numpy as np
 from scipy.signal import filtfilt, butter
 from scipy.stats import linregress
+import matplotlib.pyplot as plt
 
 def filter_and_compute_derivatives(fit_results, frame_time_step, filter_width, start_rows):
     """
@@ -152,7 +152,6 @@ def trackpoints_to_position(trackpoint_array, num_frames):
     y_vals[last_row:] = np.nan
     return y_vals
 
-'''
 def characterize_motion_from_coords(coords, movement_threshold=0.15):
     """
     Takes trackpoints coordinates and gives summary statistics.
@@ -191,73 +190,11 @@ def characterize_motion_from_coords(coords, movement_threshold=0.15):
                 prev_direction = 'neg'
         else:
             still_frames += dx[i]
+    
     prop_moving = moving_frames / dx.sum()
     prop_still = still_frames / dx.sum()
     avg_velocity = np.mean(np.abs(slopes))
     total_movement = np.abs(dy).sum()
-    #changes_dir =  (pos_movement and neg_movement)
     
     summary = [prop_moving, prop_still, avg_velocity, total_movement, direction_changes]
-    return summary
-'''
-
-
-def characterize_motion_from_coords(coords, movement_threshold=0.10):
-    """
-    Takes trackpoints coordinates and gives summary statistics.
-    Edited at Tal and Maya's request by gnb on March 22nd.
-    - 
-    
-    Parameters:
-        coords (np.ndarray): 2d array of (n_points, 2) for x and y coordinates of trackpoints.
-        movement_threshold (float): Threshold (pixels/frame) for a section between trackpoints
-                                    to consider the particle as moving.
-    Returns:
-        summary(list): Aggregate of the following summary statistics:
-            - [0] prop_moving (float): Proportion of frames particle velocity is superthreshold 
-            - [1] prop_still (float): Proportion of frames particle velocity is subthreshold 
-            - [2] avg_velocity (float): Average particle velocity over tracking. (pixels/frame)
-            - [3] total_movement (float): Total pixel-distance moved by particle over tracking.
-            - [4] direction_changes (float): Number of times a particle achieves superthreshold
-                                             velocity direction over the couse of tracking.
-    """
-    dx = np.diff(coords[:,1])
-    dy = np.diff(coords[:,0])
-    slopes = dy / dx
-    
-    moving_frames = 0
-    moving_frames_r = 0
-    moving_frames_l = 0
-    moving_dist_r = 0
-    moving_dist_l = 0
-    still_frames = 0
-    prev_direction = ''
-    direction_changes = 0
-    
-    
-    for i in range(len(slopes)):
-        if np.abs(slopes[i]) > movement_threshold:
-            moving_frames += dx[i]
-            if slopes[i] > 0:
-                moving_frames_r += np.abs(dx[i])
-                moving_dist_r   += np.abs(dy[i])
-                if prev_direction == 'neg':
-                    direction_changes += 1
-                prev_direction = 'pos'
-            if slopes[i] < 0:
-                moving_frames_l += np.abs(dx[i])
-                moving_dist_l   += np.abs(dy[i])
-                if prev_direction == 'pos':
-                    direction_changes += 1
-                prev_direction = 'neg'
-        else:
-            still_frames += dx[i]
-    prop_moving = moving_frames / dx.sum()
-    prop_still = still_frames / dx.sum()
-    avg_velocity = np.mean(np.abs(slopes))
-    total_movement = np.abs(dy).sum()
-    #changes_dir =  (pos_movement and neg_movement)
-    
-    summary = [prop_moving, prop_still, avg_velocity, total_movement, direction_changes, moving_frames_l, moving_frames_r, moving_dist_l, moving_dist_r]
-    #code.interact(local=dict(globals(), **locals())) 
     return summary
