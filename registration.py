@@ -55,10 +55,25 @@ def initial_registration(work_dir, ch1_threshold):
     raw_ch1_mov = tifffile.imread(fnames_ch1[0])
     raw_ch2_mov = tifffile.imread(fnames_ch2[0])
 
-    suprathresh_ch1_frames = np.any(raw_ch1_mov > ch1_threshold, axis=(1,2))
-    ch1_clean_stack = raw_ch1_mov[np.logical_not(suprathresh_ch1_frames)]
-    ch1_clean_template = np.mean(ch1_clean_stack, axis=0)
 
+    # Identify frames with any pixel above the ch1 threshold
+    suprathresh_ch1_frames = np.any(raw_ch1_mov > ch1_threshold, axis=(1, 2))
+    # Invert to get frames below threshold
+    below_thresh_frames = ~suprathresh_ch1_frames
+    # Extract clean stack
+    ch1_clean_stack = raw_ch1_mov[below_thresh_frames]
+    # Handle edge cases
+    if ch1_clean_stack.size == 0:
+        print(f"Warning: no frames below threshold ({ch1_threshold}). Using entire stack instead.")
+        ch1_clean_stack = raw_ch1_mov.copy()
+    elif ch1_clean_stack.shape[0] < 10:
+        print(f"Warning: only {ch1_clean_stack.shape[0]} frame(s) below threshold. Using full stack for robustness.")
+        ch1_clean_stack = raw_ch1_mov.copy()
+    # Compute clean template
+    ch1_clean_template = np.mean(ch1_clean_stack, axis=0)
+    
+    
+    
     tifffile.imwrite('ch1_subthreshhold_stack.tif', ch1_clean_stack)
     tifffile.imwrite('ch1_stack_template.tif', ch1_clean_template)
 
